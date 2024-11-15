@@ -13,3 +13,6 @@ snowflake-connector-python
 sqlalchemy
 minio
 ak-minio
+dask==2024.9.1 
+distributed==2024.9.1 
+numpy==2.0.2 
