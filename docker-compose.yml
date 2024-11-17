@@ -1,0 +1,167 @@
+
+services:
+  mytb:
+    restart: always
+    image: "thingsboard/tb-postgres"
+    ports:
+      - "8080:9090"
+      - "1883:1883"
+      - "7070:7070"
+      - "5683-5688:5683-5688/udp"
+    environment:
+      TB_QUEUE_TYPE: in-memory
+    volumes:
+      - ~/.mytb-data:/data
+      - ~/.mytb-logs:/var/log/thingsboard
+  mytrendz:
+    restart: always
+    image: "thingsboard/trendz:1.11.0"
+    ports:
+      - "8888:8888"
+    environment:
+      # TB_API_URL: https://animated-parakeet-r4rr46q4jr6p3xj9p-8080.app.github.dev
+      TB_API_URL: http://mytb:9090
+      # TRENDZ_LICENSE_SECRET: r0TwrgV5BQjQ9xy5cyMV5w1Y
+      TRENDZ_LICENSE_SECRET: ${LICENSE_SECRET}
+      TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: postgres
+      SCRIPT_ENGINE_PROVIDER: DOCKER_CONTAINER
+      SCRIPT_ENGINE_DOCKER_PROVIDER_URL: mypyexecutor:8181
+      SCRIPT_ENGINE_TIMEOUT: 30000
+    volumes:
+      - ~/.mytrendz-data:/data
+      - ~/.mytrendz-logs:/var/log/trendz
+  mypyexecutor:
+      restart: always
+      build:
+        context: ./trendz 
+        dockerfile: Dockerfile
+      ports:
+        - "8181:8181"
+      environment:
+        MAX_HEAP_SIZE: 1G
+        SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
+        EXECUTOR_MANAGER: 2
+        EXECUTOR_SCRIPT_ENGINE: 10
+        THROTTLING_QUEUE_CAPACITY: 15
+        THROTTLING_THREAD_POOL_SIZE: 12
+        NETWORK_BUFFER_SIZE: 10485760
+        PYTHONPATH: "/usr/local/lib/python3.12/site-packages"
+        PYTHON: "/usr/local/bin/python3.12"
+        LD_LIBRARY_PATH: "/usr/local/lib"
+  postgres:
+    restart: always
+    image: "postgres:15"
+    ports:
+      - "5432"
+    environment:
+      POSTGRES_DB: trendz
+      POSTGRES_PASSWORD: postgres
+    volumes:
+      - ~/.mytrendz-data/db:/var/lib/postgresql/data
+
+  fastapi-app:   
+    build:
+      context: . 
+      dockerfile: Dockerfile 
+    ports:
+      - "8060:8060"  
+    volumes:
+      - ./myFastapi:/app  
+
+
+  mysql:
+    restart: always
+    image: mysql
+    container_name: mlflow_mysql
+    ports:
+      - "3306:3306"
+    env_file:
+      - .env
+    environment:
+      MYSQL_DATABASE: MYSQL_DATABASE
+      AIRFLOW__DATABASE_DATABASE : AIRFLOW__DATABASE_DATABASE
+      MYSQL_USER:  MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+    volumes:
+      - mysql_data:/var/lib/mysql 
+      - ./sql_scripts:/docker-entrypoint-initdb.d
+
+  minio:
+    image: minio/minio
+    container_name: minio_server
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"       # MinIO API Port
+      - "9001:9001"       # MinIO Console Port
+    command: server /data --console-address ":9001"
+
+
+  mlflow:
+    restart: always
+    build:
+      context: ./mlflow
+      dockerfile: Dockerfile
+    container_name: mlflow_server
+    ports:
+      - "5000:5000"
+    environment:
+      # MinIO Configuration
+      MLFLOW_S3_ENDPOINT_URL: http://minio_server:9000
+      AWS_ACCESS_KEY_ID: minioadmin
+      AWS_SECRET_ACCESS_KEY: minioadmin
+      # MySQL Configuration
+      MYSQL_DATABASE: MYSQL_DATABASE
+      MYSQL_USER: MYSQL_USER
+      MYSQL_PASSWORD: MYSQL_PASSWORD
+      # MLflow Configuration
+      BACKEND_STORE_URI: mysql+pymysql://MYSQL_USER:MYSQL_PASSWORD@mlflow_mysql:3306/MYSQL_DATABASE
+      ARTIFACT_STORE: s3://${S3_MLFLOW_BUCKET}
+    command: >
+      mlflow server 
+      --backend-store-uri $${BACKEND_STORE_URI} 
+      --default-artifact-root $${ARTIFACT_STORE} 
+      --serve-artifacts 
+      --host 0.0.0.0
+    depends_on:
+      - mysql
+      - minio
+    volumes:
+      - mlflow-data:/mlflow
+
+
+
+  vscode:
+    build:
+      context: ./vscode
+    container_name: vscode
+    restart: always
+    ports:
+      - "8085:8085"
+    depends_on:
+      - mlflow
+    volumes:
+      - ./notebooks:/coder/huseyn/work
+      - jupyter-data:/jupyter
+    environment:
+      PASSWORD: "password"
+    command: >
+      code-server --bind-addr 0.0.0.0:8080 --auth password
+
+
+
+volumes:
+  mytb-data:
+  mytb-logs:
+  mysql_data:
+  minio_data:
+  mlflow-data:
+  jupyter-data:
