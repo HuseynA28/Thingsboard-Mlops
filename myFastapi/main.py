@@ -1,7 +1,10 @@
 from typing import List, Dict, Any, Set, Tuple, Optional
 import httpx
 from fastapi import FastAPI, HTTPException, Path, Query, Depends, Body
-from snowflake_utils import *
+try: 
+    from myFastapi.snowflake_utils import *
+except:
+    from snowflake_utils import *
 try:
     from myFastapi.funtions import convert_time, fetch_all_telemetry
 except:
@@ -9,10 +12,10 @@ except:
 
 import os
 from pydantic import BaseModel
-from s3 import S3Client
+
 
 try:
-    from s3 import *
+    from myFastapi.s3 import *
 except:
     from s3 import *
 
@@ -24,7 +27,6 @@ import os
 load_dotenv()
 
 base_url = os.getenv('BASE_URL')
-
 
 
 
