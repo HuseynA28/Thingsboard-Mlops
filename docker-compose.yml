@@ -13,6 +13,7 @@ services:
     volumes:
       - ~/.mytb-data:/data
       - ~/.mytb-logs:/var/log/thingsboard
+      - .:/app
   mytrendz:
     restart: always
     image: "thingsboard/trendz:1.11.0"
@@ -33,6 +34,9 @@ services:
     volumes:
       - ~/.mytrendz-data:/data
       - ~/.mytrendz-logs:/var/log/trendz
+      - .:/app
+    env_file:
+      - .env
   mypyexecutor:
       restart: always
       build:
@@ -61,6 +65,9 @@ services:
       POSTGRES_PASSWORD: postgres
     volumes:
       - ~/.mytrendz-data/db:/var/lib/postgresql/data
+      - .:/app
+    env_file:
+      - .env
 
   fastapi-app:   
     build:
@@ -69,7 +76,9 @@ services:
     ports:
       - "8060:8060"  
     volumes:
-      - ./myFastapi:/app  
+      - .:/app
+    env_file:
+      - .env
 
 
   mysql:
@@ -99,6 +108,9 @@ services:
       MINIO_ROOT_PASSWORD: minioadmin
     volumes:
       - minio_data:/data
+      - .:/app
+    env_file:
+      - .env
     ports:
       - "9000:9000"       # MinIO API Port
       - "9001:9001"       # MinIO Console Port
@@ -136,6 +148,9 @@ services:
       - minio
     volumes:
       - mlflow-data:/mlflow
+      - .:/app
+    env_file:
+      - .env
 
 
 
@@ -149,8 +164,11 @@ services:
     depends_on:
       - mlflow
     volumes:
+      - .:/app
       - ./notebooks:/coder/huseyn/work
       - jupyter-data:/jupyter
+    env_file:
+      - .env
     environment:
       PASSWORD: "password"
     command: >
