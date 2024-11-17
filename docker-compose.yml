@@ -90,19 +90,19 @@ services:
       - mysql_data:/var/lib/mysql 
       - ./sql_scripts:/docker-entrypoint-initdb.d
 
-  # minio:
-  #   image: minio/minio
-  #   container_name: minio_server
-  #   restart: always
-  #   environment:
-  #     MINIO_ROOT_USER: minioadmin
-  #     MINIO_ROOT_PASSWORD: minioadmin
-  #   volumes:
-  #     - minio_data:/data
-  #   ports:
-  #     - "9000:9000"       # MinIO API Port
-  #     - "9001:9001"       # MinIO Console Port
-  #   command: server /data --console-address ":9001"
+  minio:
+    image: minio/minio
+    container_name: minio_server
+    restart: always
+    environment:
+      MINIO_ROOT_USER: minioadmin
+      MINIO_ROOT_PASSWORD: minioadmin
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"       # MinIO API Port
+      - "9001:9001"       # MinIO Console Port
+    command: server /data --console-address ":9001"
 
 
   mlflow:
@@ -154,7 +154,7 @@ services:
     environment:
       PASSWORD: "password"
     command: >
-      code-server --bind-addr 0.0.0.0:8080 --auth password
+      code-server --bind-addr 0.0.0.0:8085 --auth password
 
 
 
@@ -162,6 +162,6 @@ volumes:
   mytb-data:
   mytb-logs:
   mysql_data:
-  # minio_data:
+  minio_data:
   mlflow-data:
   jupyter-data:
