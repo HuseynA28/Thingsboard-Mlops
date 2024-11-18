@@ -23,7 +23,10 @@
 
 # # Modified command to point to the correct path
 # CMD ["uvicorn", "myFastapi.main:app", "--reload", "--host", "0.0.0.0", "--port", "8060"]
-FROM python:3.12-slim
+
+
+####  Install FastAPI with JupyterLab to save some space and avoid installing Python packages twice. If you do not want that deactive the code below and active the code above
+FROM python:3.11-slim
 
 WORKDIR /app
 
