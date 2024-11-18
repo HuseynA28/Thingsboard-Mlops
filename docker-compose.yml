@@ -135,12 +135,12 @@ services:
       # MLflow Configuration
       BACKEND_STORE_URI: ${BACKEND_URI}
       ARTIFACT_STORE: ${ARTIFACT_ROOT}
-    # command: >
-    #   mlflow server 
-    #   --backend-store-uri ${BACKEND_STORE_URI} 
-    #   --default-artifact-root ${ARTIFACT_STORE} 
-    #   --serve-artifacts 
-    #   --host 0.0.0.0
+    command: >
+      mlflow server 
+      --backend-store-uri ${BACKEND_STORE_URI} 
+      --default-artifact-root ${ARTIFACT_STORE} 
+      --serve-artifacts 
+      --host 0.0.0.0
     depends_on:
       - mysql
       - minio
@@ -152,29 +152,23 @@ services:
     env_file:
       - .env
 
-
-
-
   vscode:
     build:
-      context: ./vscode
+      context: .
+      dockerfile: Dockerfile
     container_name: vscode
     restart: always
     ports:
       - "8085:8085"
-    depends_on:
-      - mlflow
     volumes:
-      - .:/app
       - ./notebooks:/coder/huseyn/work
       - jupyter-data:/jupyter
-    env_file:
-      - .env
+      - ./.vscode/settings.json:/home/coder/.local/share/code-server/User/settings.json
+      - ./.vscode:/home/coder/.local/share/code-server
     environment:
       PASSWORD: "password"
-    command: >
-      code-server --bind-addr 0.0.0.0:8085 --auth password
-
+      DOCKER_USER: "coder"
+    command: code-server --bind-addr 0.0.0.0:8085 --auth password --disable-telemetry
 
 
 volumes:
