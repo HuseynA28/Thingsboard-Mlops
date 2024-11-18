@@ -38,7 +38,7 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements and environment variables
 COPY requirements.in .env ./
-
+COPY 
 # Install requirements including Jupyter
 RUN pip install --no-cache-dir pip-tools && \
     pip-compile requirements.in && \
@@ -47,7 +47,7 @@ RUN pip install --no-cache-dir pip-tools && \
 
 # Copy application code
 COPY myFastapi ./myFastapi/
-
+COPY Snowflake-ml-script ./Snowflake-ml-script/
 # Copy the startup script
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh

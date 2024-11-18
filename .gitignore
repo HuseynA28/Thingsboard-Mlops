@@ -1,2 +1,25 @@
+# Python virtual environment
+venv/
+env/
 .env
+.venv/
+ENV/
+
+# MLflow
+mlruns/
 --default-artifact-root
+
+# Jupyter Notebook
+.ipynb_checkpoints/
+*.ipynb_checkpoints/
+
+# Snowflake credentials and configs
+*.snowsql
+snowflake.json
+
+# Python cache
+__pycache__/
+*.py[cod]
+myFastapi/__pycache__/snowflake_utils.cpython-311.pyc
+myFastapi/__pycache__/__init__.cpython-311.pyc
+myFastapi/__pycache__/funtions.cpython-311.pyc
