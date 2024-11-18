@@ -138,8 +138,8 @@ services:
       ARTIFACT_STORE: ${ARTIFACT_ROOT}
     command: >
       mlflow server 
-      --backend-store-uri ${BACKEND_STORE_URI} 
-      --default-artifact-root ${ARTIFACT_STORE} 
+      --backend-store-uri ${BACKEND_URI} 
+      --default-artifact-root ${ARTIFACT_ROOT} 
       --serve-artifacts 
       --host 0.0.0.0
     depends_on:
