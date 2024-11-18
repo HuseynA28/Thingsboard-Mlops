@@ -23,3 +23,4 @@ __pycache__/
 myFastapi/__pycache__/snowflake_utils.cpython-311.pyc
 myFastapi/__pycache__/__init__.cpython-311.pyc
 myFastapi/__pycache__/funtions.cpython-311.pyc
+myFastapi/__pycache__
