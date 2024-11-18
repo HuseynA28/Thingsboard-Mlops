@@ -90,11 +90,11 @@ services:
     env_file:
       - .env
     environment:
-      MYSQL_DATABASE: MYSQL_DATABASE
-      AIRFLOW__DATABASE_DATABASE : AIRFLOW__DATABASE_DATABASE
-      MYSQL_USER:  MYSQL_USER
-      MYSQL_PASSWORD: MYSQL_PASSWORD
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE:  ${MYSQL_DATABASE}
+      AIRFLOW__DATABASE_DATABASE : ${AIRFLOW__DATABASE_DATABASE}
+      MYSQL_USER:  ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql 
       - ./sql_scripts:/docker-entrypoint-initdb.d
@@ -104,8 +104,8 @@ services:
     container_name: minio_server
     restart: always
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER:  ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD:  ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
       - .:/app
@@ -117,6 +117,7 @@ services:
     command: server /data --console-address ":9001"
 
 
+  services:
   mlflow:
     restart: always
     build:
@@ -127,20 +128,20 @@ services:
       - "5000:5000"
     environment:
       # MinIO Configuration
-      MLFLOW_S3_ENDPOINT_URL: http://minio_server:9000
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      MLFLOW_S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       # MySQL Configuration
-      MYSQL_DATABASE: MYSQL_DATABASE
-      MYSQL_USER: MYSQL_USER
-      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       # MLflow Configuration
-      BACKEND_STORE_URI: mysql+pymysql://MYSQL_USER:MYSQL_PASSWORD@mlflow_mysql:3306/MYSQL_DATABASE
-      ARTIFACT_STORE: s3://${S3_MLFLOW_BUCKET}
+      BACKEND_STORE_URI: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mlflow_mysql:3306/${MYSQL_DATABASE}
+      ARTIFACT_STORE: s3://${S3_MLFLOW_BUCKET_MLFLOW}
     command: >
       mlflow server 
-      --backend-store-uri $${BACKEND_STORE_URI} 
-      --default-artifact-root $${ARTIFACT_STORE} 
+      --backend-store-uri ${BACKEND_STORE_URI} 
+      --default-artifact-root ${ARTIFACT_STORE} 
       --serve-artifacts 
       --host 0.0.0.0
     depends_on:
