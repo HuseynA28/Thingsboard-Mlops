@@ -74,7 +74,8 @@ services:
       context: . 
       dockerfile: Dockerfile 
     ports:
-      - "8060:8060"  
+      - "8060:8060" 
+      - "1010:1010"   ## jupyter
     volumes:
       - .:/app
     env_file:
@@ -152,23 +153,34 @@ services:
     env_file:
       - .env
 
-  vscode:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    container_name: vscode
-    restart: always
-    ports:
-      - "8085:8085"
-    volumes:
-      - ./notebooks:/coder/huseyn/work
-      - jupyter-data:/jupyter
-      - ./.vscode/settings.json:/home/coder/.local/share/code-server/User/settings.json
-      - ./.vscode:/home/coder/.local/share/code-server
-    environment:
-      PASSWORD: "password"
-      DOCKER_USER: "coder"
-    command: code-server --bind-addr 0.0.0.0:8085 --auth password --disable-telemetry
+  # vscode:
+  #   build:
+  #     context: ./vscode
+  #     dockerfile: Dockerfile
+  #   container_name: vscode
+  #   restart: always
+  #   ports:
+  #     - "8085:8085"
+  #   volumes:
+  #     - ./notebooks:/coder/huseyn/work
+  #     - jupyter-data:/jupyter
+  #     - ./.vscode/settings.json:/home/coder/.local/share/code-server/User/settings.json
+  #     - ./.vscode:/home/coder/.local/share/code-server
+  #   environment:
+  #     PASSWORD: "password"
+  #     DOCKER_USER: "coder"
+  #   command: code-server --bind-addr 0.0.0.0:8085 --auth password --disable-telemetry
+
+  # jupyter:
+  #   build:
+  #     context: ./Jupiterlab
+  #     dockerfile: Dockerfile
+  #   container_name: jupyter
+  #   restart: always
+  #   ports:
+  #     - "1010:1010"
+  #   volumes:
+  #     - jupyter-data:/jup
 
 
 volumes:
