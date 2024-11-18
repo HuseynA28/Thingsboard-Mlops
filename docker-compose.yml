@@ -23,7 +23,7 @@ services:
       # TB_API_URL: https://animated-parakeet-r4rr46q4jr6p3xj9p-8080.app.github.dev
       TB_API_URL: http://mytb:9090
       # TRENDZ_LICENSE_SECRET: r0TwrgV5BQjQ9xy5cyMV5w1Y
-      TRENDZ_LICENSE_SECRET: ${LICENSE_SECRET}
+      TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
       TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
       SPRING_DATASOURCE_USERNAME: postgres
@@ -45,9 +45,9 @@ services:
       ports:
         - "8181:8181"
       environment:
-        MAX_HEAP_SIZE: 1G
+        MAX_HEAP_SIZE: 2G
         SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
-        EXECUTOR_MANAGER: 2
+        EXECUTOR_MANAGER: 3
         EXECUTOR_SCRIPT_ENGINE: 10
         THROTTLING_QUEUE_CAPACITY: 15
         THROTTLING_THREAD_POOL_SIZE: 12
@@ -91,7 +91,6 @@ services:
       - .env
     environment:
       MYSQL_DATABASE:  ${MYSQL_DATABASE}
-      AIRFLOW__DATABASE_DATABASE : ${AIRFLOW__DATABASE_DATABASE}
       MYSQL_USER:  ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_DATABASE}
       MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
@@ -116,8 +115,6 @@ services:
       - "9001:9001"       # MinIO Console Port
     command: server /data --console-address ":9001"
 
-
-  services:
   mlflow:
     restart: always
     build:
@@ -136,22 +133,25 @@ services:
       MYSQL_USER: ${MYSQL_USER}
       MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       # MLflow Configuration
-      BACKEND_STORE_URI: mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@mlflow_mysql:3306/${MYSQL_DATABASE}
-      ARTIFACT_STORE: s3://${S3_MLFLOW_BUCKET_MLFLOW}
-    command: >
-      mlflow server 
-      --backend-store-uri ${BACKEND_STORE_URI} 
-      --default-artifact-root ${ARTIFACT_STORE} 
-      --serve-artifacts 
-      --host 0.0.0.0
+      BACKEND_STORE_URI: ${BACKEND_URI}
+      ARTIFACT_STORE: ${ARTIFACT_ROOT}
+    # command: >
+    #   mlflow server 
+    #   --backend-store-uri ${BACKEND_STORE_URI} 
+    #   --default-artifact-root ${ARTIFACT_STORE} 
+    #   --serve-artifacts 
+    #   --host 0.0.0.0
     depends_on:
       - mysql
       - minio
     volumes:
       - mlflow-data:/mlflow
       - .:/app
+      - ./notebooks:/coder/huseyn/work
+      - jupyter-data:/jupyter
     env_file:
       - .env
+
 
 
 
