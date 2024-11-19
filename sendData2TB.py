@@ -20,7 +20,7 @@ def update_timestamp():
         current_date = start_date
         while True:
             yield int(current_date.timestamp())
-            current_date += timedelta(minutes=60)
+            current_date += timedelta(minutes=10)
     
     return date_generator()
 
