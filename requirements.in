@@ -9,9 +9,9 @@ snowflake-connector-python
 sqlalchemy
 minio
 ak-minio
-dask==2024.9.1 
-distributed==2024.9.1 
-numpy==2.0.2
+dask
+distributed
+numpy
 boto3
 snowflake-snowpark-python
 snowflake-ml-python

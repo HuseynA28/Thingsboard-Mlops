@@ -154,7 +154,6 @@ services:
       - .:/app
       - ./notebooks:/coder/huseyn/work
       - jupyter-data:/jupyter
-      - pip-cache:/root/.pip
     env_file:
       - .env
 

@@ -61,7 +61,8 @@ async def fetch_all_telemetry(
     entity_url = urljoin(base_url, f'/api/plugins/telemetry/{entityType}/{entityId}/values/timeseries')
     params = {
         "startTs": start_time_millis,
-        "endTs": end_time_millis
+        "endTs": end_time_millis,
+        "limit": 10*10000
     }
     if telemetry_keys:
         if isinstance(telemetry_keys, list) and all(isinstance(k, str) for k in telemetry_keys):
