@@ -9,9 +9,9 @@ snowflake-connector-python
 sqlalchemy
 minio
 ak-minio
-dask
+dask 
 distributed
 numpy
 boto3
 snowflake-snowpark-python
-snowflake-ml-python
+##snowflake-ml-python
