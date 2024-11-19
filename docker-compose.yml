@@ -69,14 +69,15 @@ services:
     env_file:
       - .env
 
+
   fastapi-app:   
     build:
       context: . 
       dockerfile: Dockerfile 
-      restart: always
+    restart: always
     ports:
       - "8060:8060" 
-      - "1010:1010"   ## jupyter
+      - "1010:1010"   # jupyter
     volumes:
       - .:/app
     env_file:
