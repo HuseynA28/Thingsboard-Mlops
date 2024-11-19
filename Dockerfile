@@ -46,7 +46,7 @@ RUN pip install --no-cache-dir pip-tools && \
 
 # Copy application code
 COPY myFastapi ./myFastapi/
-COPY Snowflake-ml-script ./Snowflake-ml-script/
+COPY notebooks ./notebooks/
 # Copy the startup script
 COPY start.sh /app/start.sh
 RUN chmod +x /app/start.sh
