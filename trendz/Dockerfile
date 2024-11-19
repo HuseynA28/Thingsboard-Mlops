@@ -46,6 +46,8 @@ RUN wget -O get-pip.py https://bootstrap.pypa.io/get-pip.py && \
     python3.12 get-pip.py && \
     rm get-pip.py
 
+
+    
 # Install only essential packages
 RUN pip3.12 install --no-cache-dir \
     numpy \
