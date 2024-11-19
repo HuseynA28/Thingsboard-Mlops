@@ -2,7 +2,7 @@ from tb_device_mqtt import TBDeviceMqttClient
 import csv
 import time
 from datetime import datetime
-
+import math
 
 from dotenv import load_dotenv
 import os
@@ -27,15 +27,15 @@ def read_and_send_data(client, csv_file):
         csv_reader = csv.DictReader(file)
         for row in csv_reader:
             telemetry = {
-                "co": float(row["co"]),
-                "humidity": float(row["humidity"]),
+                "co": (float(row["co"]) * 100),
+                "humidity": (float(row["humidity"])),
                 "light": row["light"].lower() == "true",
-                "lpg": float(row["lpg"]),
-                "motion": row["motion"].lower() == "true",
-                "smoke": float(row["smoke"]),
-                "temp": float(row["temp"])
+                "lpg": (float(row["lpg"]) * 100),
+                "motion": row["motion"].lower() == "true", 
+                "smoke": (float(row["smoke"]) * 100),
+                "temp": (float(row["temp"]))
             }
-            
+                
             try:
                 client.send_telemetry({
                     "ts": update_timestamp(row["ts"]) * 1000,
@@ -45,7 +45,7 @@ def read_and_send_data(client, csv_file):
             except Exception as e:
                 print(f"Failed to send data: {e}")
             
-            # time.sleep(1)
+            time.sleep(0.5)
 
 try:
     client = TBDeviceMqttClient(HOST, port=PORT, username=ACCESS_TOKEN)
