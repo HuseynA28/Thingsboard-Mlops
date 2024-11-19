@@ -38,7 +38,6 @@ RUN apt-get update && apt-get install -y \
 
 # Copy requirements and environment variables
 COPY requirements.in .env ./
-COPY 
 # Install requirements including Jupyter
 RUN pip install --no-cache-dir pip-tools && \
     pip-compile requirements.in && \
