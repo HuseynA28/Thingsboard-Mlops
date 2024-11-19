@@ -23,7 +23,7 @@ services:
       # TB_API_URL: https://animated-parakeet-r4rr46q4jr6p3xj9p-8080.app.github.dev
       TB_API_URL: http://mytb:9090
       # TRENDZ_LICENSE_SECRET: r0TwrgV5BQjQ9xy5cyMV5w1Y
-      TRENDZ_LICENSE_SECRET: ${LICENSE_SECRET}
+      TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
       TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
       SPRING_DATASOURCE_USERNAME: postgres
@@ -45,9 +45,9 @@ services:
       ports:
         - "8181:8181"
       environment:
-        MAX_HEAP_SIZE: 1G
+        MAX_HEAP_SIZE: 2G
         SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
-        EXECUTOR_MANAGER: 2
+        EXECUTOR_MANAGER: 3
         EXECUTOR_SCRIPT_ENGINE: 10
         THROTTLING_QUEUE_CAPACITY: 15
         THROTTLING_THREAD_POOL_SIZE: 12
@@ -74,7 +74,8 @@ services:
       context: . 
       dockerfile: Dockerfile 
     ports:
-      - "8060:8060"  
+      - "8060:8060" 
+      - "1010:1010"   ## jupyter
     volumes:
       - .:/app
     env_file:
@@ -90,11 +91,10 @@ services:
     env_file:
       - .env
     environment:
-      MYSQL_DATABASE: MYSQL_DATABASE
-      AIRFLOW__DATABASE_DATABASE : AIRFLOW__DATABASE_DATABASE
-      MYSQL_USER:  MYSQL_USER
-      MYSQL_PASSWORD: MYSQL_PASSWORD
-      MYSQL_ROOT_PASSWORD: MYSQL_ROOT_PASSWORD
+      MYSQL_DATABASE:  ${MYSQL_DATABASE}
+      MYSQL_USER:  ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_DATABASE}
+      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
     volumes:
       - mysql_data:/var/lib/mysql 
       - ./sql_scripts:/docker-entrypoint-initdb.d
@@ -104,8 +104,8 @@ services:
     container_name: minio_server
     restart: always
     environment:
-      MINIO_ROOT_USER: minioadmin
-      MINIO_ROOT_PASSWORD: minioadmin
+      MINIO_ROOT_USER:  ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD:  ${MINIO_ROOT_PASSWORD}
     volumes:
       - minio_data:/data
       - .:/app
@@ -115,7 +115,6 @@ services:
       - "9000:9000"       # MinIO API Port
       - "9001:9001"       # MinIO Console Port
     command: server /data --console-address ":9001"
-
 
   mlflow:
     restart: always
@@ -127,20 +126,20 @@ services:
       - "5000:5000"
     environment:
       # MinIO Configuration
-      MLFLOW_S3_ENDPOINT_URL: http://minio_server:9000
-      AWS_ACCESS_KEY_ID: minioadmin
-      AWS_SECRET_ACCESS_KEY: minioadmin
+      MLFLOW_S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
+      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
+      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
       # MySQL Configuration
-      MYSQL_DATABASE: MYSQL_DATABASE
-      MYSQL_USER: MYSQL_USER
-      MYSQL_PASSWORD: MYSQL_PASSWORD
+      MYSQL_DATABASE: ${MYSQL_DATABASE}
+      MYSQL_USER: ${MYSQL_USER}
+      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
       # MLflow Configuration
-      BACKEND_STORE_URI: mysql+pymysql://MYSQL_USER:MYSQL_PASSWORD@mlflow_mysql:3306/MYSQL_DATABASE
-      ARTIFACT_STORE: s3://${S3_MLFLOW_BUCKET}
+      BACKEND_STORE_URI: ${BACKEND_URI}
+      ARTIFACT_STORE: ${ARTIFACT_ROOT}
     command: >
       mlflow server 
-      --backend-store-uri $${BACKEND_STORE_URI} 
-      --default-artifact-root $${ARTIFACT_STORE} 
+      --backend-store-uri ${BACKEND_URI} 
+      --default-artifact-root ${ARTIFACT_ROOT} 
       --serve-artifacts 
       --host 0.0.0.0
     depends_on:
@@ -149,31 +148,39 @@ services:
     volumes:
       - mlflow-data:/mlflow
       - .:/app
-    env_file:
-      - .env
-
-
-
-  vscode:
-    build:
-      context: ./vscode
-    container_name: vscode
-    restart: always
-    ports:
-      - "8085:8085"
-    depends_on:
-      - mlflow
-    volumes:
-      - .:/app
       - ./notebooks:/coder/huseyn/work
       - jupyter-data:/jupyter
     env_file:
       - .env
-    environment:
-      PASSWORD: "password"
-    command: >
-      code-server --bind-addr 0.0.0.0:8085 --auth password
 
+  # vscode:
+  #   build:
+  #     context: ./vscode
+  #     dockerfile: Dockerfile
+  #   container_name: vscode
+  #   restart: always
+  #   ports:
+  #     - "8085:8085"
+  #   volumes:
+  #     - ./notebooks:/coder/huseyn/work
+  #     - jupyter-data:/jupyter
+  #     - ./.vscode/settings.json:/home/coder/.local/share/code-server/User/settings.json
+  #     - ./.vscode:/home/coder/.local/share/code-server
+  #   environment:
+  #     PASSWORD: "password"
+  #     DOCKER_USER: "coder"
+  #   command: code-server --bind-addr 0.0.0.0:8085 --auth password --disable-telemetry
+
+  # jupyter:
+  #   build:
+  #     context: ./Jupiterlab
+  #     dockerfile: Dockerfile
+  #   container_name: jupyter
+  #   restart: always
+  #   ports:
+  #     - "1010:1010"
+  #   volumes:
+  #     - jupyter-data:/jup
 
 
 volumes:
