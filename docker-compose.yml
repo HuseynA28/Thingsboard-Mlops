@@ -44,6 +44,8 @@ services:
         dockerfile: Dockerfile
       ports:
         - "8181:8181"
+      volumes:
+         - pip-cache:/root/.pip
       environment:
         MAX_HEAP_SIZE: 2G
         SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
@@ -79,6 +81,7 @@ services:
       - "1010:1010"   # jupyter
     volumes:
       - .:/app
+      - pip-cache:/root/.pip
     env_file:
       - .env
 
@@ -151,6 +154,7 @@ services:
       - .:/app
       - ./notebooks:/coder/huseyn/work
       - jupyter-data:/jupyter
+      - pip-cache:/root/.pip
     env_file:
       - .env
 
@@ -191,3 +195,4 @@ volumes:
   minio_data:
   mlflow-data:
   jupyter-data:
+  pip-cache:

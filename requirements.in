@@ -13,3 +13,5 @@ dask==2024.9.1
 distributed==2024.9.1 
 numpy==2.0.2
 boto3
+snowflake-snowpark-python
+snowflake-ml-python
