@@ -25,7 +25,7 @@ class S3Client:
             region_name=region,
             aws_access_key_id=aws_access_key_id,
             aws_secret_access_key=aws_secret_access_key,
-            endpoint_url=endpoint_url  # Use this if you're using MinIO or a custom S3 endpoint
+            endpoint_url=endpoint_url  
         )
         self._ensure_bucket_exists()
 
