@@ -1,3 +1,4 @@
+# pip install tb-mqtt-client
 from tb_device_mqtt import TBDeviceMqttClient
 import csv
 import time
