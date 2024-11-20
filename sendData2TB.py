@@ -1,3 +1,4 @@
+# python3 -m pip install --upgrade pip
 # pip install tb-mqtt-client
 from tb_device_mqtt import TBDeviceMqttClient
 import csv
@@ -20,7 +21,7 @@ def update_timestamp():
         current_date = start_date
         while True:
             yield int(current_date.timestamp())
-            current_date += timedelta(minutes=10)
+            current_date += timedelta(minutes=60)
     
     return date_generator()
 

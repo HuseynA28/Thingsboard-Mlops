@@ -84,10 +84,11 @@ s3_client = S3Client(
 async def get_elements_by_id(
     entityType: str = Query(..., description="String value representing the entity type. For example, 'DEVICE'"),
     entityId: str = Query(..., description="A string value representing the entity id. For example, '784f394c-42b6-435a-983c-b7beff2784f9'"),
-    start_date: str = Query(..., description="Start time/date in UTC format, e.g., '2023-04-23T17:25:43.511Z'", alias="start-date"),
+    start_date: str = Query(..., description="Start time/date in UTC format, e.g., '2024-01-01T00:00:00.000Z'", alias="start-date"),
     end_date: str = Query(..., description="End time/date in UTC format, e.g., '2023-04-23T17:25:43.511Z'", alias="end-date"),
     telemetry_keys: Optional[str] = Query(None, description="Comma-separated list of telemetry keys."),
     table_name:  Optional[str] = Query(None, description="The table name for the telemetry data"),
+    LIMIT : Optional[str] = Query(100, description="The table name for the telemetry data"),
     savebase: bool = Query(False, description="Whether to save data to S3")
 ):
     global token_global 
@@ -108,7 +109,8 @@ async def get_elements_by_id(
             start_time_millis=start_time_millis,
             end_time_millis=end_time_millis,
             telemetry_keys=telemetry_keys_list,
-            token=token_global
+            token=token_global,
+            limit=LIMIT
         )
         if savebase:
             success = s3_client.save_telemetry(telemetry, table_name)

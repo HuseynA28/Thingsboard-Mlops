@@ -50,8 +50,10 @@ async def fetch_all_telemetry(
     entityId: str,
     start_time_millis: int,
     end_time_millis: int,
+    limit: int, 
     telemetry_keys: Optional[List[str]] = None,
-    token: str = token_global 
+    token: str = token_global,
+
 ) -> Dict[str, Any]:
 
     base_url = os.getenv('BASE_URL')
@@ -62,7 +64,7 @@ async def fetch_all_telemetry(
     params = {
         "startTs": start_time_millis,
         "endTs": end_time_millis,
-        "limit": 10*10000
+        "limit": limit
     }
     if telemetry_keys:
         if isinstance(telemetry_keys, list) and all(isinstance(k, str) for k in telemetry_keys):
