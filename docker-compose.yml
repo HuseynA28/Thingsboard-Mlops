@@ -1,4 +1,3 @@
-
 services:
   mytb:
     restart: always
@@ -44,8 +43,6 @@ services:
         dockerfile: Dockerfile
       ports:
         - "8181:8181"
-      volumes:
-         - pip-cache:/root/.pip
       environment:
         MAX_HEAP_SIZE: 2G
         SCRIPT_ENGINE_RUNTIME_TIMEOUT: 30000
@@ -54,8 +51,8 @@ services:
         THROTTLING_QUEUE_CAPACITY: 15
         THROTTLING_THREAD_POOL_SIZE: 12
         NETWORK_BUFFER_SIZE: 10485760
-        PYTHONPATH: "/usr/local/lib/python3.12/site-packages"
-        PYTHON: "/usr/local/bin/python3.12"
+        PYTHONPATH: "/usr/local/lib/python3.11/site-packages"
+        PYTHON: "/usr/local/bin/python3.11"
         LD_LIBRARY_PATH: "/usr/local/lib"
   postgres:
     restart: always
@@ -70,8 +67,6 @@ services:
       - .:/app
     env_file:
       - .env
-
-
   fastapi-app:   
     build:
       context: . 
@@ -81,27 +76,28 @@ services:
       - "1010:1010"   # jupyter
     volumes:
       - .:/app
-      - pip-cache:/root/.pip
     env_file:
       - .env
-
-
   mysql:
     restart: always
-    image: mysql
-    container_name: mlflow_mysql
+    image: mysql:latest
+    container_name: mysql
     ports:
-      - "3306:3306"
+        - "3306:3306"
     env_file:
-      - .env
+        - .env
     environment:
-      MYSQL_DATABASE:  ${MYSQL_DATABASE}
-      MYSQL_USER:  ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_DATABASE}
-      MYSQL_ROOT_PASSWORD: ${MYSQL_ROOT_PASSWORD}
+        - MYSQL_DATABASE=${MYSQL_DATABASE}
+        - MYSQL_USER=${MYSQL_USER}
+        - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+        - MYSQL_ROOT_PASSWORD=${MYSQL_ROOT_PASSWORD}
     volumes:
-      - mysql_data:/var/lib/mysql 
-      - ./sql_scripts:/docker-entrypoint-initdb.d
+        - mysql_data:/var/lib/mysql 
+        - ./sql_scripts:/docker-entrypoint-initdb.d
+    healthcheck:
+        test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+        timeout: 20s
+        retries: 10
 
   minio:
     image: minio/minio
@@ -120,71 +116,32 @@ services:
       - "9001:9001"       # MinIO Console Port
     command: server /data --console-address ":9001"
 
+
   mlflow:
-    restart: always
-    build:
-      context: ./mlflow
-      dockerfile: Dockerfile
-    container_name: mlflow_server
-    ports:
-      - "5000:5000"
-    environment:
-      # MinIO Configuration
-      MLFLOW_S3_ENDPOINT_URL: ${S3_ENDPOINT_URL}
-      AWS_ACCESS_KEY_ID: ${AWS_ACCESS_KEY_ID}
-      AWS_SECRET_ACCESS_KEY: ${AWS_SECRET_ACCESS_KEY}
-      # MySQL Configuration
-      MYSQL_DATABASE: ${MYSQL_DATABASE}
-      MYSQL_USER: ${MYSQL_USER}
-      MYSQL_PASSWORD: ${MYSQL_PASSWORD}
-      # MLflow Configuration
-      BACKEND_STORE_URI: ${BACKEND_URI}
-      ARTIFACT_STORE: ${ARTIFACT_ROOT}
-    command: >
-      mlflow server 
-      --backend-store-uri ${BACKEND_URI} 
-      --default-artifact-root ${ARTIFACT_ROOT} 
-      --serve-artifacts 
-      --host 0.0.0.0
-    depends_on:
-      - mysql
-      - minio
-    volumes:
-      - mlflow-data:/mlflow
-      - .:/app
-      - ./notebooks:/coder/huseyn/work
-      - jupyter-data:/jupyter
-    env_file:
-      - .env
-
-  # vscode:
-  #   build:
-  #     context: ./vscode
-  #     dockerfile: Dockerfile
-  #   container_name: vscode
-  #   restart: always
-  #   ports:
-  #     - "8085:8085"
-  #   volumes:
-  #     - ./notebooks:/coder/huseyn/work
-  #     - jupyter-data:/jupyter
-  #     - ./.vscode/settings.json:/home/coder/.local/share/code-server/User/settings.json
-  #     - ./.vscode:/home/coder/.local/share/code-server
-  #   environment:
-  #     PASSWORD: "password"
-  #     DOCKER_USER: "coder"
-  #   command: code-server --bind-addr 0.0.0.0:8085 --auth password --disable-telemetry
-
-  # jupyter:
-  #   build:
-  #     context: ./Jupiterlab
-  #     dockerfile: Dockerfile
-  #   container_name: jupyter
-  #   restart: always
-  #   ports:
-  #     - "1010:1010"
-  #   volumes:
-  #     - jupyter-data:/jup
+      restart: always
+      build: 
+          context: ./mlflow
+          dockerfile: Dockerfile
+      container_name: mlflow_server
+      ports:
+          - "5000:5000"
+      env_file:
+          - .env
+      environment:
+          - MYSQL_HOST=mysql
+          - MYSQL_PORT=3306
+          - MYSQL_USER=${MYSQL_USER}
+          - MYSQL_PASSWORD=${MYSQL_PASSWORD}
+          - MYSQL_DATABASE=${MYSQL_DATABASE}
+          - S3_MLFLOW_BUCKET=${S3_MLFLOW_BUCKET}
+          - MLFLOW_S3_ENDPOINT_URL=${S3_ENDPOINT_URL}
+          - AWS_ACCESS_KEY_ID=${AWS_ACCESS_KEY_ID}
+          - AWS_SECRET_ACCESS_KEY=${AWS_SECRET_ACCESS_KEY}
+      depends_on:
+          mysql:
+              condition: service_healthy
+      volumes:
+          - mlflow-data:/mlflow
 
 
 volumes:
@@ -194,4 +151,3 @@ volumes:
   minio_data:
   mlflow-data:
   jupyter-data:
-  pip-cache:
