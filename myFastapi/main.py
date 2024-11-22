@@ -27,7 +27,7 @@ import os
 load_dotenv()
 
 base_url = os.getenv('BASE_URL')
-
+region_aws = os.getenv('AWS_DEFAULT_REGION')
 
 
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
@@ -72,7 +72,7 @@ async def login(form_data: CustomLoginForm = Depends()):
 # Instantiate the MinIOClient
 s3_client = S3Client(
     bucket_name='fastapi-snowflake',
-    region='eu-central-1',
+    region=region_aws,
     aws_access_key_id=AWS_ACCESS_KEY_ID,
     aws_secret_access_key=AWS_SECRET_ACCESS_KEY,
     endpoint_url=S3_ENDPOINT_URL  

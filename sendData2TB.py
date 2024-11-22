@@ -11,7 +11,7 @@ import os
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-HOST = "dev-thingsboard.bda-itnovum.com"
+HOST = "localhost"
 
 PORT = 1883
 
