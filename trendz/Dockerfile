@@ -49,7 +49,10 @@ RUN wget -O get-pip.py https://bootstrap.pypa.io/get-pip.py && \
 RUN pip3.11 install --no-cache-dir \
     numpy \
     pandas \
-    scikit-learn
+    scikit-learn \
+    mlflow \
+    prophet \
+    boto3 \
 
 # Set environment variables for Python
 ENV PATH="/usr/local/bin:$PATH"

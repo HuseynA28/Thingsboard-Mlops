@@ -11,7 +11,8 @@ import os
 load_dotenv()
 
 ACCESS_TOKEN = os.getenv('ACCESS_TOKEN')
-HOST = "localhost"
+HOST = "dev-thingsboard.bda-itnovum.com"
+
 PORT = 1883
 
 def update_timestamp():
@@ -50,7 +51,7 @@ def read_and_send_data(client, csv_file):
             except Exception as e:
                 print(f"Failed to send data: {e}")
             
-            time.sleep(0.3)
+            time.sleep(2)
 
 try:
     client = TBDeviceMqttClient(HOST, port=PORT, username=ACCESS_TOKEN)
