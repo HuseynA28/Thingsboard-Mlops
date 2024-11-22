@@ -52,7 +52,7 @@ RUN pip3.11 install --no-cache-dir \
     scikit-learn \
     mlflow \
     prophet \
-    boto3 \
+    boto3 
 
 # Set environment variables for Python
 ENV PATH="/usr/local/bin:$PATH"
