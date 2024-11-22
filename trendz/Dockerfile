@@ -53,6 +53,8 @@ RUN pip3.11 install --no-cache-dir \
     mlflow \
     prophet \
     boto3 
+COPY .env ./
+
 
 # Set environment variables for Python
 ENV PATH="/usr/local/bin:$PATH"
