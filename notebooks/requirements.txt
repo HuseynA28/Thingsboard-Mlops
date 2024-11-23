@@ -1,5 +1,4 @@
 boto3
 snowflake-snowpark-python
-snowflake-ml-python
-tensorflow
 mlflow
+xgboost

@@ -10,15 +10,13 @@ try:
 except:
     from funtions import convert_time, fetch_all_telemetry
 
-import os
-from pydantic import BaseModel
-
-
 try:
-    from myFastapi.s3 import *
+    from myFastapi.s3_script import *
 except:
-    from s3 import *
+    from s3_script import *
 
+
+from pydantic import BaseModel
 token_global = ""
 from dotenv import load_dotenv
 import os
