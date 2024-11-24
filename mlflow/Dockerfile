@@ -41,7 +41,8 @@ ENV MYSQL_PORT=3306
 
 CMD ["sh", "-c", "mlflow server \
     --backend-store-uri mysql+pymysql://${MYSQL_USER}:${MYSQL_PASSWORD}@${MYSQL_HOST}:${MYSQL_PORT}/${MYSQL_DATABASE} \
-    --default-artifact-root s3://${S3_MLFLOW_BUCKET}/ \
+    --artifacts-destination s3://${S3_MLFLOW_BUCKET_MLFLOW}/ \
+    --default-artifact-root mlflow-artifacts:/artifacts \
     --host 0.0.0.0 \
     --port 5000 \
     --serve-artifacts"]

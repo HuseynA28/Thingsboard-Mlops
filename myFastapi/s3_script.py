@@ -2,7 +2,7 @@
 from typing import List, Dict, Any, Set, Tuple, Optional
 import boto3
 from botocore.exceptions import ClientError
-from typing import Dict
+from typinimport Dict
 import json
 import boto3
 from botocore.exceptions import ClientError

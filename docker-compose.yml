@@ -21,8 +21,8 @@ services:
     environment:
       # TB_API_URL: https://animated-parakeet-r4rr46q4jr6p3xj9p-8080.app.github.dev
       TB_API_URL: http://mytb:9090
-      # TRENDZ_LICENSE_SECRET: r0TwrgV5BQjQ9xy5cyMV5w1Y
-      TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
+      TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_DA}
+      # TRENDZ_LICENSE_SECRET: ${TRENDZ_LICENSE_SECRET}
       TRENDZ_LICENSE_INSTANCE_DATA_FILE: /data/license.data
       SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/trendz
       SPRING_DATASOURCE_USERNAME: postgres
