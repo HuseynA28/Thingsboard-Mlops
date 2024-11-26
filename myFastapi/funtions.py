@@ -51,6 +51,8 @@ async def fetch_all_telemetry(
     start_time_millis: int,
     end_time_millis: int,
     limit: int, 
+    interval=Optional[int]=0,
+    agg=Optional[str]=None,
     telemetry_keys: Optional[List[str]] = None,
     token: str = token_global,
 

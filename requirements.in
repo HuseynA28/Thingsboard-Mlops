@@ -11,3 +11,4 @@ minio
 ak-minio
 numpy
 mlflow
+boto3
