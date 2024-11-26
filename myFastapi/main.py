@@ -1,6 +1,9 @@
 from typing import List, Dict, Any, Set, Tuple, Optional
 import httpx
 from fastapi import FastAPI, HTTPException, Path, Query, Depends, Body
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
 try:
     from myFastapi.funtions import convert_time, fetch_all_telemetry
@@ -8,8 +11,8 @@ except:
     from funtions import convert_time, fetch_all_telemetry
 
 try:
-    from myFastapi.s3_script import S3Client
-except:
+    from .s3_script import S3Client  # Note the dot
+except ImportError:
     from s3_script import S3Client
 
 
