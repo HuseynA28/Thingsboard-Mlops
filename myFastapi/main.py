@@ -28,7 +28,6 @@ load_dotenv()
 base_url = os.getenv('BASE_URL')
 region_aws = os.getenv('AWS_DEFAULT_REGION')
 
-
 AWS_ACCESS_KEY_ID = os.getenv('AWS_ACCESS_KEY_ID')
 AWS_SECRET_ACCESS_KEY = os.getenv('AWS_SECRET_ACCESS_KEY')
 S3_ENDPOINT_URL = os.getenv('S3_ENDPOINT_URL')
@@ -84,13 +83,16 @@ async def get_elements_by_id(
     entityType: str = Query(..., description="String value representing the entity type. For example, 'DEVICE'"),
     entityId: str = Query(..., description="A string value representing the entity id. For example, '784f394c-42b6-435a-983c-b7beff2784f9'"),
     start_date: str = Query(..., description="Start time/date in UTC format, e.g., '2024-01-01T00:00:00.000Z'", alias="start-date"),
-    end_date: str = Query(..., description="End time/date in UTC format, e.g., '2023-04-23T17:25:43.511Z'", alias="end-date"),
-    interval : Optional[int] = Query(0, description="A long value representing the aggregation interval range in milliseconds. Default value : 0", alias="interval"),
-    agg : Optional[int]=Query("NONE", description="A string value representing the aggregation function. If the interval is not specified, 'agg' parameter will use 'NONE' value. \
-    Available values : MIN, MAX, AVG, SUM, COUNT, NONE", alias="NONE"),
+    end_date: str = Query(..., description="End time/date in UTC format, e.g., '2024-01-01T00:00:00.000Z'", alias="end-date"),
+    interval : Optional[int] = Query(0, description="Aggregation interval in milliseconds. Use 86400000 for daily intervals. Default is 0", alias="interval"),
+    agg: Optional[str] = Query(
+        None,
+        description="Aggregation function. Available values: MIN, MAX, AVG, SUM, COUNT, NONE",
+        alias="AGG"
+    ),
     telemetry_keys: Optional[str] = Query(None, description="Comma-separated list of telemetry keys."),
     table_name:  Optional[str] = Query(None, description="The table name for the telemetry data"),
-    LIMIT : Optional[str] = Query(100, description="The table name for the telemetry data"),
+    LIMIT : Optional[int] = Query(100, description="The table name for the telemetry data"),
     savebase: bool = Query(False, description="Whether to save data to S3")
 ):
     global token_global 
