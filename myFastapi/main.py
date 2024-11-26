@@ -11,9 +11,9 @@ except:
     from funtions import convert_time, fetch_all_telemetry
 
 try:
-    from .s3_script import S3Client  # Note the dot
+    from myFastapi.s3_script import *
 except ImportError:
-    from s3_script import S3Client
+    from s3_script import *
 
 
 from pydantic import BaseModel
