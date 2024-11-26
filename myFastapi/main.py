@@ -10,11 +10,12 @@ try:
 except:
     from funtions import convert_time, fetch_all_telemetry
 
+
+
 try:
     from myFastapi.s3_script import *
-except ImportError:
-    from s3_script import *
-
+except:
+    from .s3_script import *
 
 from pydantic import BaseModel
 token_global = ""
@@ -84,9 +85,9 @@ async def get_elements_by_id(
     entityId: str = Query(..., description="A string value representing the entity id. For example, '784f394c-42b6-435a-983c-b7beff2784f9'"),
     start_date: str = Query(..., description="Start time/date in UTC format, e.g., '2024-01-01T00:00:00.000Z'", alias="start-date"),
     end_date: str = Query(..., description="End time/date in UTC format, e.g., '2023-04-23T17:25:43.511Z'", alias="end-date"),
-    interval : Optional[int] = Query(..., description="A long value representing the aggregation interval range in milliseconds. Default value : 0", alias="interval"),
-    agg : Optional[int]=Query(..., description="A string value representing the aggregation function. If the interval is not specified, 'agg' parameter will use 'NONE' value. \
-    Available values : MIN, MAX, AVG, SUM, COUNT, NONE", alias="aggregation_function"),
+    interval : Optional[int] = Query(0, description="A long value representing the aggregation interval range in milliseconds. Default value : 0", alias="interval"),
+    agg : Optional[int]=Query("NONE", description="A string value representing the aggregation function. If the interval is not specified, 'agg' parameter will use 'NONE' value. \
+    Available values : MIN, MAX, AVG, SUM, COUNT, NONE", alias="NONE"),
     telemetry_keys: Optional[str] = Query(None, description="Comma-separated list of telemetry keys."),
     table_name:  Optional[str] = Query(None, description="The table name for the telemetry data"),
     LIMIT : Optional[str] = Query(100, description="The table name for the telemetry data"),
