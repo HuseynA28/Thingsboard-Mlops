@@ -51,7 +51,8 @@ RUN pip3.11 install --no-cache-dir \
     pandas \
     scikit-learn \
     mlflow \
-    boto3 
+    boto3   \
+    prophet
 COPY .env ./
 
 
